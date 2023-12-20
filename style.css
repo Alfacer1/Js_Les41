@@ -1,0 +1,106 @@
+body {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif, sans-serif;
+    display: flex;
+    background-color: beige;
+  }
+  
+  #categories {
+    width: 10%;
+    border-right: 1px solid #702d2d;
+    padding: 10px;
+  }
+  
+  #products {
+    width: 50%;
+    padding: 10px;
+  }
+  
+  #product-info {
+    width: 30%;
+    padding: 10px;
+  }
+  
+  #btn, #orderBtn{
+    background-color: #68e128;
+    color: #0f0f12;
+    padding: 10px;
+    border-radius: 5%;
+    font-size: 20px;
+  }
+  
+  /* #orderBtn{
+    background-color: #68e128;
+    color: #0f0f12;
+    padding: 10px;
+    border-radius: 5%;
+    font-size: 20px;
+  } */
+  
+  #btn:hover, #orderBtn:hover, #myOrdersBtn:hover{
+    background-color: #28c5e1;
+    color: #0f0f12;
+    padding: 10px;
+    border-radius: 5%;
+    font-size: 20px;
+  }
+  #order-form {
+    display: none;
+    padding: 10px;
+  }
+  
+  #fullName{
+    max-width: 37vh;
+    margin-bottom: 2vh;
+  }
+  
+  #city{
+    max-width: 37vh;
+    margin-bottom: 2vh;
+  }
+  
+  #paymentMethod{
+    max-width: 38.8vh;
+    margin-bottom: 2vh;
+  }
+  
+  #deliveryPoint{
+    margin-bottom: 2vh;
+  }
+  
+  #quantity{
+    margin-bottom: 2vh;
+  }
+  
+  textarea {
+    max-width: 300px; 
+    max-height: 150px; 
+    resize: none;  
+  }
+  
+  #myOrdersBtn{
+    background-color: #68e128;
+    color: #0f0f12;
+    padding: 9px;
+    border-radius: 5%;
+    font-size: 20px;
+    max-height: 8vh;
+  }
+  
+  #products{
+    width: 21%;
+  }
+  
+  #product-info{
+    width: 20%;
+    padding: 10px;
+  }
+  
+  #order-info{
+    width: 15%;
+    padding: 10px;
+  }
+  
+  #order-history{
+    padding: 10px;
+  }
+  

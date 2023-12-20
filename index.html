@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин телефонів</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <button id="myOrdersBtn" onclick="showOrderHistory()">Мої замовлення</button>
+
+<div id="categories">
+    <h2>Категорії</h2>
+    <ul id="category-list">
+        <li onclick="showProducts('category1')">Samsung</li>
+        <li onclick="showProducts('category2')">Apple</li>
+        <li onclick="showProducts('category3')">Xiaomi</li>
+    </ul>
+</div>
+
+<div id="products">
+    <h2>Товари</h2>
+    <ul id="product-list">
+    </ul>
+</div>
+
+<div id="product-info">
+    <h2>Інформація про товар</h2>
+    <div id="info-content">
+    </div>
+    <button id="btn" onclick="showOrderForm()">Купити</button>
+</div>
+
+<div id="order-form">
+    <h2>Форма оформлення замовлення</h2>
+    <form onsubmit="submitOrderForm(event)">
+        <label for="fullName">ПІБ покупця:</label>
+        <input type="text" id="fullName" required><br>
+
+        <label for="city">Місто:</label>
+        <select id="city" required>
+            <option value="cherkasy">Черкаси</option>
+            <option value="chernihiv">Чернігів</option>
+            <option value="chernivtsi">Чернівці</option>
+            <option value="dnipro">Дніпро</option>
+            <option value="donetsk">Донецьк</option>
+            <option value="ivano-frankivsk">Івано-Франківськ</option>
+            <option value="kharkiv">Харків</option>
+            <option value="kherson">Херсон</option>
+            <option value="khmelnytskyi">Хмельницький</option>
+            <option value="kiev">Київ</option>
+            <option value="kirovohrad">Кіровоград</option>
+            <option value="luhansk">Луганськ</option>
+            <option value="lviv">Львів</option>
+            <option value="mykolaiv">Миколаїв</option>
+            <option value="odesa">Одеса</option>
+            <option value="poltava">Полтава</option>
+            <option value="rivne">Рівне</option>
+            <option value="sumy">Суми</option>
+            <option value="ternopil">Тернопіль</option>
+            <option value="uzhhorod">Ужгород</option>
+            <option value="vinnytsia">Вінниця</option>
+            <option value="zaporizhzhia">Запоріжжя</option>
+            <option value="zhytomyr">Житомир</option>
+        </select><br>
+
+        <label for="deliveryPoint">Склад Нової пошти:</label>
+        <input type="text" id="deliveryPoint" required><br>
+
+        <label for="paymentMethod">Спосіб оплати:</label>
+        <select id="paymentMethod" required>
+            <option value="cashOnDelivery">Післяплатa</option>
+            <option value="creditCard">Оплата банківською карткою</option>
+            <option value="womenCard">Оплата натурою (тільки за Iphone)</option>
+        </select>
+        <br>
+        <label for="quantity">Кількість продукції:</label>
+        <br>
+        <input type="number" min="1" max="5" id="quantity" required>
+        <br>
+        <label for="comment">Коментар до замовлення:</label>
+        <textarea maxlength="200" id="comment"></textarea>
+        <br>
+
+        <button id="orderBtn" onclick="placeOrder()" type="submit">Підтвердити замовлення</button>
+    </form>
+</div>
+
+<div id="order-info">
+    <h2>Інформація про замовлення</h2>
+    <p id="order-details"></p>
+</div>
+
+<div id="order-history">
+    <h2>Мої замовлення</h2>
+    <ul id="order-history-list"></ul>
+</div>
+
+<script>
+    const categories = {
+        category1: [
+            { id: 1, name: 'Samsung Galaxy S23 Ultra', price: 55999 },
+            { id: 2, name: 'Samsung Galaxy Fold 5', price: 86999 },
+            { id: 3, name: 'Samsung Galaxy Flip 5', price: 46999 },
+            { id: 4, name: 'Samsung Galaxy S23', price: 37999 },
+            { id: 5, name: 'Samsung Galaxy S22', price: 24599 },
+            { id: 6, name: 'Samsung Galaxy S21 FE', price: 20499 }
+        ],
+        category2: [
+            { id: 7, name: 'Apple iPhone 15 Pro', price: 78499 },
+            { id: 8, name: 'Apple iPhone 14 Pro Max', price: 77499 },
+            { id: 9, name: 'Apple iPhone 15', price: 57499 },
+            { id: 10, name: 'Apple iPhone 15 Plus', price: 47499 },
+            { id: 11, name: 'Apple iPhone 14 Plus', price: 46999 },
+            { id: 12, name: 'Apple iPhone 13', price: 39999 },
+        ],
+        category3: [
+            { id: 13, name: 'Xiaomi Mix Fold 2', price: 70099 },
+            { id: 14, name: 'Xiaomi 13 Ultra', price: 57258 },
+            { id: 15, name: 'Xiaomi 13 Pro', price: 45174 },
+            { id: 16, name: 'Xiaomi 13T Pro', price: 31909 },
+            { id: 17, name: 'Xiaomi 13', price: 30101 },
+            { id: 18, name: 'Xiaomi 12 Pro', price: 29843 },
+        ],
+    };
+
+    // Отримати історію замовлень з localStorage
+    const orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
+
+    function showProducts(category) {
+        const productList = document.getElementById('product-list');
+        const products = categories[category];
+
+        // Очистіть список товарів перед відображенням нових
+        productList.innerHTML = '';
+
+        // Відобразити товари у списку
+        products.forEach(product => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${product.name} - ${product.price} грн`;
+
+            // Додаємо івентлисенер для обробки кліку
+            listItem.addEventListener('click', () => showProductInfo(product));
+
+            productList.appendChild(listItem);
+        });
+    }
+
+    function showProductInfo(product) {
+        const infoContent = document.getElementById('info-content');
+        infoContent.innerHTML = `
+            <p><strong>Назва:</strong> ${product.name}</p>
+            <p><strong>Ціна:</strong> ${product.price} грн</p>
+    
+        `;
+    }
+
+    function showOrderForm() {
+        document.getElementById('order-form').style.display = 'block';
+    }
+
+    function showOrderHistory() {
+        const orderHistoryList = document.getElementById('order-history-list');
+        orderHistoryList.innerHTML = '';
+
+        orderHistory.forEach((order, index) => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('order-item');
+            listItem.innerHTML = `<strong>Дата:</strong> ${new Date(order.date).toLocaleDateString()}, <strong>Ціна:</strong> ${order.totalPrice} грн`;
+            listItem.onclick = () => toggleOrderDetails(index);
+            orderHistoryList.appendChild(listItem);
+        });
+
+        document.getElementById('order-history').style.display = 'block';
+    }
+
+    function submitOrderForm(event) {
+        event.preventDefault();
+
+        // Отримання значень з форми
+        const form = event.target;
+        const getValue = name => form.elements[name].value;
+
+        const fullName = getValue('fullName');
+        const city = getValue('city');
+        const deliveryPoint = getValue('deliveryPoint');
+        const paymentMethod = getValue('paymentMethod');
+        const quantity = getValue('quantity');
+        const comment = getValue('comment');
+
+        // Перевірка обов'язкових полів
+        if (!fullName || !city || !deliveryPoint || !paymentMethod || !quantity) {
+            alert('Будь ласка, заповніть всі обов\'язкові поля форми.');
+            return;
+        }
+
+        // Збереження замовлення в localStorage
+        const order = { date: Date.now(), fullName, city, deliveryPoint, paymentMethod, quantity, comment };
+        order.totalPrice = calculateTotalPrice(order); // Додали обчислення загальної ціни
+        orderHistory.push(order);
+        localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+
+        // Відображення інформації про замовлення на сторінці
+        const orderDetails = `
+            <strong>ПІБ покупця:</strong> ${fullName}<br>
+            <strong>Місто:</strong> ${city}<br>
+            <strong>Склад Нової пошти:</strong> ${deliveryPoint}<br>
+            <strong>Спосіб оплати:</strong> ${paymentMethod}<br>
+            <strong>Кількість продукції:</strong> ${quantity}<br>
+            <strong>Коментар:</strong> ${comment || 'Відсутній'}<br>
+            <strong>Загальна ціна:</strong> ${order.totalPrice} грн
+        `;
+
+        document.getElementById('order-details').innerHTML = orderDetails;
+        document.getElementById('order-info').style.display = 'block';
+        document.getElementById('order-form').style.display = 'none';
+    }
+
+    function showOrderHistory() {
+        const orderHistoryList = document.getElementById('order-history-list');
+        orderHistoryList.innerHTML = '';
+
+        orderHistory.forEach((order, index) => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('order-item');
+            listItem.innerHTML = `
+                <strong>Дата:</strong> ${new Date(order.date).toLocaleDateString()},
+                <strong>Ціна:</strong> ${order.totalPrice} грн
+                <button onclick="deleteOrder(${index})">Видалити</button>
+            `;
+
+            listItem.onclick = () => toggleOrderDetails(index);
+            orderHistoryList.appendChild(listItem);
+        });
+
+        document.getElementById('order-history').style.display = 'block';
+    }
+
+    function deleteOrder(index) {
+        orderHistory.splice(index, 1);
+        localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+        showOrderHistory();
+    }
+
+    function calculateTotalPrice(order) {
+    // Припустима ціна одиниці товару
+    const productPrice = 1;
+
+    // Обчислити загальну ціну на основі кількості товарів та ціни одиниці товару
+    const totalPrice = order.quantity * productPrice;
+
+    return totalPrice;
+}
+
+    function toggleOrderDetails(index) {
+        const orderDetailsList = document.querySelectorAll('.order-details');
+        const orderItem = document.querySelectorAll('.order-item')[index];
+
+        // Закрити всі розгорнуті деталі
+        orderDetailsList.forEach((details, i) => {
+            if (i !== index) {
+                details.style.display = 'none';
+            }
+        });
+
+        const orderDetails = document.createElement('div');
+        orderDetails.classList.add('order-details');
+
+        const order = orderHistory[index];
+        orderDetails.innerHTML = `
+            <p><strong>ПІБ покупця:</strong> ${order.fullName}</p>
+            <p><strong>Місто:</strong> ${order.city}</p>
+            <p><strong>Склад Нової пошти:</strong> ${order.deliveryPoint}</p>
+            <p><strong>Спосіб оплати:</strong> ${order.paymentMethod}</p>
+            <p><strong>Кількість продукції:</strong> ${order.quantity}</p>
+            <p><strong>Коментар:</strong> ${order.comment || 'Відсутній'}</p>
+            <p><strong>Загальна ціна:</strong> ${order.totalPrice} грн</p>
+        `;
+
+        orderItem.appendChild(orderDetails);
+        orderDetails.style.display = orderDetails.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Відображення всіх категорій при завантаженні сторінки
+    showProducts('category1');
+
+</script>
+
+</body>
+</html>
