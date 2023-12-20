@@ -147,7 +147,6 @@
         infoContent.innerHTML = `
             <p><strong>Назва:</strong> ${product.name}</p>
             <p><strong>Ціна:</strong> ${product.price} грн</p>
-    
         `;
     }
 
@@ -189,7 +188,7 @@
         }
 
         const order = { date: Date.now(), fullName, city, deliveryPoint, paymentMethod, quantity, comment };
-        order.totalPrice = calculateTotalPrice(order); // Додали обчислення загальної ціни
+        order.totalPrice = calculateTotalPrice(order);
         orderHistory.push(order);
         localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
 
