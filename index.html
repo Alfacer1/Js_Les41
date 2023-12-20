@@ -125,22 +125,17 @@
         ],
     };
 
-    // Отримати історію замовлень з localStorage
     const orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
 
     function showProducts(category) {
         const productList = document.getElementById('product-list');
         const products = categories[category];
-
-        // Очистіть список товарів перед відображенням нових
         productList.innerHTML = '';
 
-        // Відобразити товари у списку
         products.forEach(product => {
             const listItem = document.createElement('li');
             listItem.textContent = `${product.name} - ${product.price} грн`;
 
-            // Додаємо івентлисенер для обробки кліку
             listItem.addEventListener('click', () => showProductInfo(product));
 
             productList.appendChild(listItem);
@@ -178,7 +173,6 @@
     function submitOrderForm(event) {
         event.preventDefault();
 
-        // Отримання значень з форми
         const form = event.target;
         const getValue = name => form.elements[name].value;
 
@@ -189,19 +183,16 @@
         const quantity = getValue('quantity');
         const comment = getValue('comment');
 
-        // Перевірка обов'язкових полів
         if (!fullName || !city || !deliveryPoint || !paymentMethod || !quantity) {
             alert('Будь ласка, заповніть всі обов\'язкові поля форми.');
             return;
         }
 
-        // Збереження замовлення в localStorage
         const order = { date: Date.now(), fullName, city, deliveryPoint, paymentMethod, quantity, comment };
         order.totalPrice = calculateTotalPrice(order); // Додали обчислення загальної ціни
         orderHistory.push(order);
         localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
 
-        // Відображення інформації про замовлення на сторінці
         const orderDetails = `
             <strong>ПІБ покупця:</strong> ${fullName}<br>
             <strong>Місто:</strong> ${city}<br>
@@ -244,10 +235,8 @@
     }
 
     function calculateTotalPrice(order) {
-    // Припустима ціна одиниці товару
     const productPrice = 1;
 
-    // Обчислити загальну ціну на основі кількості товарів та ціни одиниці товару
     const totalPrice = order.quantity * productPrice;
 
     return totalPrice;
@@ -257,7 +246,6 @@
         const orderDetailsList = document.querySelectorAll('.order-details');
         const orderItem = document.querySelectorAll('.order-item')[index];
 
-        // Закрити всі розгорнуті деталі
         orderDetailsList.forEach((details, i) => {
             if (i !== index) {
                 details.style.display = 'none';
@@ -282,7 +270,6 @@
         orderDetails.style.display = orderDetails.style.display === 'block' ? 'none' : 'block';
     }
 
-    // Відображення всіх категорій при завантаженні сторінки
     showProducts('category1');
 
 </script>
